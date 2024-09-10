@@ -2,7 +2,9 @@ package toy_project.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import toy_project.demo.dto.UserRegistrationRequest;
 import toy_project.demo.entity.User;
 import toy_project.demo.service.UserService;
 
@@ -22,11 +24,11 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
         try {
-            User createdUser = userService.createUser(user);
-            return ResponseEntity.ok(createdUser);
-        } catch (IllegalArgumentException e) {
+            User createUser = userService.registerUser(request);
+            return ResponseEntity.ok(createUser);
+        } catch (IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

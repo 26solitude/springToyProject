@@ -1,9 +1,13 @@
 package toy_project.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 public class User {
 
     @Id
@@ -19,57 +23,19 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
     private String profilePicture;
 
     // 기본 생성자
     public User() {}
 
-    // 생성자 및 Getter, Setter 추가
-    public User(String username, String fullName, String email, String profilePicture) {
+    // 생성자
+    public User(String username, String fullName, String email, String password) {
         this.username = username;
         this.fullName = fullName;
         this.email = email;
-        this.profilePicture = profilePicture;
-    }
-
-    // Getter 및 Setter 추가
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
+        this.password = password;
     }
 }
