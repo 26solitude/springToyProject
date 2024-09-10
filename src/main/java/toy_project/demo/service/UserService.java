@@ -22,6 +22,10 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public User createUser(User user) {
         // Check for duplicate username
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
@@ -64,7 +68,4 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
 }

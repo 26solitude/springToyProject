@@ -1,5 +1,3 @@
--- Reset the 'users' table and reset the auto-increment value
-TRUNCATE TABLE users RESTART IDENTITY;
 
 -- Insert new data
 INSERT INTO users (username, full_name, email, profile_picture) VALUES ('kim_minsoo', '김민수', 'minsoo.kim@example.com', 'http://example.com/minsoo.png');
