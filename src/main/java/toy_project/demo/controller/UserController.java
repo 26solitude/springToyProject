@@ -1,8 +1,10 @@
 package toy_project.demo.controller;
 
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import toy_project.demo.dto.LoginRequest;
 import toy_project.demo.dto.UserRegistrationRequest;
 import toy_project.demo.entity.User;
 import toy_project.demo.service.UserService;
@@ -28,6 +30,16 @@ public class UserController {
             User createUser = userService.registerUser(request);
             return ResponseEntity.ok(createUser);
         } catch (IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request){
+        try{
+            User user = userService.login(request);
+            return ResponseEntity.ok(user);
+        }catch(IllegalArgumentException e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

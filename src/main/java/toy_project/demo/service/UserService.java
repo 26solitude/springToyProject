@@ -3,6 +3,7 @@ package toy_project.demo.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import toy_project.demo.dto.LoginRequest;
 import toy_project.demo.dto.UserRegistrationRequest;
 import toy_project.demo.entity.User;
 import toy_project.demo.repository.UserRepository;
@@ -48,6 +49,22 @@ public class UserService {
         User user = new User(request.getUsername(), request.getFullName(), request.getEmail(), encodedPassword);
 
         return userRepository.save(user);
+    }
+
+    public User login(LoginRequest request){
+        Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
+
+        if(optionalUser.isEmpty()){
+            throw new IllegalArgumentException("Invalid username or password.");
+        }
+
+        User user = optionalUser.get();
+
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new IllegalArgumentException("Invalid username or password.");
+        }
+
+        return user;
     }
 
     public User updateUser(Long id, User updatedUser) {
