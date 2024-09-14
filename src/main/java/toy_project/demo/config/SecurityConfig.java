@@ -21,7 +21,7 @@ public class SecurityConfig {
 //                                .anyRequest().authenticated()  // 그 외의 요청은 인증 필요
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**", "/users/**")  // H2 콘솔 및 /users/**에 대한 CSRF 비활성화
+                        .ignoringRequestMatchers("/h2-console/**", "/users/**", "/posts/**")  // H2 콘솔 및 /users/**, /posts/**에 대한 CSRF 비활성화
                 )
                 .headers(headersConfigurer ->
                         headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)  // 최신 메서드로 프레임 옵션 설정
