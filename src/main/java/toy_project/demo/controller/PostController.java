@@ -8,7 +8,6 @@ import toy_project.demo.entity.Post;
 import toy_project.demo.service.PostService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/posts")
@@ -21,18 +20,14 @@ public class PostController {
     public ResponseEntity<?> createPost(@RequestParam Long userId,
                                         @RequestParam String imageUrl,
                                         @RequestParam String description) {
-        try {
-            Post post = postService.createPost(userId, imageUrl, description);
-            return ResponseEntity.ok(post);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Post post = postService.createPost(userId, imageUrl, description);
+        return ResponseEntity.ok(post);
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<Post> getPostById(@PathVariable Long postId){
-        Optional<Post> post = postService.getPostByID(postId);
-        return post.map(ResponseEntity::ok).orElseGet(()->ResponseEntity.notFound().build());
+    public ResponseEntity<Post> getPostById(@PathVariable Long postId) {
+        Post post = postService.getPostByID(postId);
+        return ResponseEntity.ok(post);
     }
 
     @PutMapping("/{postId}")
@@ -40,22 +35,14 @@ public class PostController {
                                         @RequestParam Long userId,
                                         @RequestParam String imageUrl,
                                         @RequestParam String description) {
-        try {
-            Post updatePost = postService.updatePost(postId, userId, imageUrl, description);
-            return ResponseEntity.ok(updatePost);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        Post updatedPost = postService.updatePost(postId, userId, imageUrl, description);
+        return ResponseEntity.ok(updatedPost);
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<?> deletePost(@PathVariable Long postId, @RequestParam Long userId){
-        try{
-            postService.deletePost(postId, userId);
-            return ResponseEntity.ok().build();
-        }catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Post> deletePost(@PathVariable Long postId, @RequestParam Long userId) {
+            Post deletedPost = postService.deletePost(postId, userId);
+            return ResponseEntity.ok(deletedPost);
     }
 
     @GetMapping("/user/{userId}")

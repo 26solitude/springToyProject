@@ -1,14 +1,15 @@
 package toy_project.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import toy_project.demo.entity.Post;
 import toy_project.demo.entity.User;
 import toy_project.demo.repository.PostRepository;
 import toy_project.demo.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PostService {
@@ -31,7 +32,7 @@ public class PostService {
     public Post updatePost(Long postId, Long userId, String imageUrl, String description) {
         // 게시물 조회
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found with id " + postId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id " + postId));
 
         // 사용자 유효성 검사
         if (!post.getUser().getId().equals(userId)) {
@@ -46,18 +47,19 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public void deletePost(Long postId, Long userId) {
+    public Post deletePost(Long postId, Long userId) {
         // 게시물 조회
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found with id " + postId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Post not found with id " + postId));
 
         // 사용자 유효성 검사
         if (!post.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("User is not authorized to delete");
+            throw new IllegalArgumentException("User is not authorized to delete this post");
         }
 
         // 게시물 삭제
         postRepository.delete(post);
+        return post;
     }
 
     public List<Post> getPostByUser(Long userId) {
@@ -67,7 +69,8 @@ public class PostService {
         return postRepository.findByUser(user);
     }
 
-    public Optional<Post> getPostByID(Long postId) {
-        return postRepository.findById(postId);
+    public Post getPostByID(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id " + postId));
     }
 }

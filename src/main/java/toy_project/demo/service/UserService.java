@@ -1,8 +1,10 @@
 package toy_project.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import toy_project.demo.dto.LoginRequest;
 import toy_project.demo.dto.UserRegistrationRequest;
 import toy_project.demo.entity.User;
@@ -25,7 +27,7 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found with id " + id));
     }
 
     public User registerUser(UserRegistrationRequest request) {
@@ -93,12 +95,12 @@ public class UserService {
 
                     return userRepository.save(user);
                 })
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id " + id));
     }
 
     public User deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id " + id));
         userRepository.deleteById(id);
         return user;
     }
