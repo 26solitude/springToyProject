@@ -1,6 +1,5 @@
 package toy_project.demo.controller;
 
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +9,6 @@ import toy_project.demo.entity.User;
 import toy_project.demo.service.UserService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -26,43 +24,31 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
-        try {
-            User createUser = userService.registerUser(request);
-            return ResponseEntity.ok(createUser);
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        User createUser = userService.registerUser(request);
+        return ResponseEntity.ok(createUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request){
-        try{
-            User user = userService.login(request);
-            return ResponseEntity.ok(user);
-        }catch(IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
+        User user = userService.login(request);
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = userService.getUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        try {
-            User user = userService.updateUser(id, updatedUser);
-            return ResponseEntity.ok(user);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        User user = userService.updateUser(id, updatedUser);
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<User> deleteUser(@PathVariable Long id) {
+        User deletedUser = userService.deleteUser(id);
+        return ResponseEntity.ok(deletedUser);
     }
 }

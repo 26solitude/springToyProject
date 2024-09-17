@@ -23,12 +23,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
     }
 
     public User registerUser(UserRegistrationRequest request) {
@@ -51,16 +48,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User login(LoginRequest request){
+    public User login(LoginRequest request) {
         Optional<User> optionalUser = userRepository.findByUsername(request.getUsername());
 
-        if(optionalUser.isEmpty()){
+        if (optionalUser.isEmpty()) {
             throw new IllegalArgumentException("Invalid username or password.");
         }
 
         User user = optionalUser.get();
 
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Invalid username or password.");
         }
 
@@ -99,7 +96,10 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
     }
 
-    public void deleteUser(Long id) {
+    public User deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id " + id));
         userRepository.deleteById(id);
+        return user;
     }
 }

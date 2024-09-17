@@ -34,6 +34,7 @@ public class PostController {
         Optional<Post> post = postService.getPostByID(postId);
         return post.map(ResponseEntity::ok).orElseGet(()->ResponseEntity.notFound().build());
     }
+
     @PutMapping("/{postId}")
     public ResponseEntity<?> updatePost(@PathVariable Long postId,
                                         @RequestParam Long userId,

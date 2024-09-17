@@ -38,9 +38,9 @@ public class CommentService {
     }
 
     public List<Comment> getCommentsByPost(Long postId) {
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id " + postId));
-//                .orElseThrow(()-> new IllegalArgumentException("Post not found with id " + postId));
 
         return commentRepository.findByPost(post);
     }
