@@ -16,15 +16,11 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<?> createComment(@RequestParam Long userId,
+    public ResponseEntity<Comment> createComment(@RequestParam Long userId,
                                            @RequestParam Long postId,
                                            @RequestParam String content){
-        try{
             Comment comment = commentService.createComment(userId, postId, content);
             return ResponseEntity.ok(comment);
-        }catch(IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
     }
 
     @GetMapping("/post/{postId}")
@@ -34,13 +30,21 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Comment>> getCommentsByUser(@PathVariable Long userId){
+        List<Comment> comments = commentService.getCommentsByUser(userId);
+        return ResponseEntity.ok(comments);
+    }
+
+    @PutMapping("/{commentId}")
+    public ResponseEntity<Comment> updateComment(@PathVariable Long commentId,
+                                                 @RequestParam String content){
+        Comment updatedComment = commentService.updateComment(commentId, content);
+        return ResponseEntity.ok(updatedComment);
+    }
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId){
-        try{
-            commentService.deleteComment(commentId);
-            return ResponseEntity.ok().build();
-        }catch(IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Comment> deleteComment(@PathVariable Long commentId){
+            Comment deletedComment = commentService.deleteComment(commentId);
+            return ResponseEntity.ok(deletedComment);
     }
 }

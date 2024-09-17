@@ -25,9 +25,9 @@ public class CommentService {
 
     public Comment createComment(Long userId, Long postId, String content) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id " + userId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id " + userId));
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Post not found with id " + postId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with id " + postId));
 
         Comment comment = new Comment();
         comment.setUser(user);
@@ -45,10 +45,26 @@ public class CommentService {
         return commentRepository.findByPost(post);
     }
 
-    public void deleteComment(Long commentId){
+    public Comment deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
-                        .orElseThrow(()-> new IllegalArgumentException("Comment not found with id " + commentId));
-        commentRepository.deleteById(commentId);
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with id " + commentId));
+        commentRepository.delete(comment);
+        return comment;
     }
 
+    public List<Comment> getCommentsByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id " + userId));
+
+        return commentRepository.findByUser(user);
+    }
+
+    public Comment updateComment(Long commentId, String content) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found with id " + commentId));
+
+        comment.setContent(content);
+
+        return commentRepository.save(comment);
+    }
 }

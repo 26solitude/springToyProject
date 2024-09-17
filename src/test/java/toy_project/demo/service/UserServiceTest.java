@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import toy_project.demo.dto.UserRegistrationRequest;
 import toy_project.demo.entity.User;
 
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,9 +44,9 @@ public class UserServiceTest {
 
         User savedUser = userService.registerUser(user);
 
-        Optional<User> foundUser = userService.getUserById(savedUser.getId());
-        assertTrue(foundUser.isPresent());
-        assertEquals("test_user", foundUser.get().getUsername());
+        User foundUser = userService.getUserById(savedUser.getId());
+        assertNotNull(foundUser, "User should not be null");
+        assertEquals("test_user", foundUser.getUsername());
     }
 
     @Test
@@ -78,12 +78,14 @@ public class UserServiceTest {
         user.setEmail("test.user@example.com");
         user.setPassword("testpassword");
 
+        // 사용자 등록
         User savedUser = userService.registerUser(user);
 
+        // 사용자 삭제
         userService.deleteUser(savedUser.getId());
 
-        Optional<User> deletedUser = userService.getUserById(savedUser.getId());
-        assertFalse(deletedUser.isPresent());
+        // 사용자가 삭제되었는지 확인 (예외 발생)
+        assertThrows(ResponseStatusException.class, () -> userService.getUserById(savedUser.getId()));
     }
 
     @Test
