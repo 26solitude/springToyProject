@@ -3,35 +3,50 @@ package toy_project.demo.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.*;
+import org.springframework.security.config.http.*;
+import toy_project.demo.security.JwtAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 @Configuration
 public class SecurityConfig {
 
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    // PasswordEncoder 빈 등록
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // AuthenticationManager 빈 등록
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    // SecurityFilterChain 설정
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorizeRequests ->
-                                authorizeRequests
-                                        .requestMatchers("/h2-console/**").permitAll() // H2 콘솔에 대한 접근 허용
-                                        .anyRequest().permitAll()  // 모든 요청에 대해 접근 허용
-//                                .anyRequest().authenticated()  // 그 외의 요청은 인증 필요
-                )
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**", "/users/**", "/posts/**", "/comments/**")  // H2 콘솔 및 /users/**, /posts/**, /comments/** 에 대한 CSRF 비활성화
-                )
-                .headers(headersConfigurer ->
-                        headersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)  // 최신 메서드로 프레임 옵션 설정
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/users/login", "/users").permitAll() // 로그인 및 회원가입 경로 허용
+                        .anyRequest().authenticated() // 그 외의 요청은 인증 필요
                 );
 
-        return http.build();
-    }
+        // JWT 필터를 시큐리티 필터 체인에 추가
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
+        return http.build();
     }
 }

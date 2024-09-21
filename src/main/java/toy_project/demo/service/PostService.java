@@ -20,7 +20,7 @@ public class PostService {
 
     public Post createPost(Long userId, String imageUrl, String description) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id " + userId));
 
         Post post = new Post();
         post.setUser(user);

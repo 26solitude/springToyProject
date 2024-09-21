@@ -30,6 +30,11 @@ public class UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found with id " + id));
     }
 
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found with username " + username));
+    }
+
     public User registerUser(UserRegistrationRequest request) {
         // Check for duplicate username
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
